@@ -28,3 +28,10 @@ Salin setiap pertanyaan ambigu (nomor 1 sampai 7) ke sini dan jawab. Contoh:
 ## Asumsi lain
 
 Tambahkan di sini keputusan lain yang Anda ambil: rumus denda progresif, perubahan skema database, format error API, dan seterusnya.
+
+## A-02: normalisasi kode dan nama aset
+- Pertanyaan: Apakah kode dan nama aset dinormalisasi (trim, huruf besar)?
+- Keputusan: Tidak. Kode dan nama disimpan apa adanya.
+- Alasan: Soal hanya mewajibkan tidak null atau kosong, dan saya tidak ingin mengubah input pengguna diam-diam.
+- Dampak ke kode: Aset (konstruktor dan setNama), hanya memakai isBlank().
+- Tes yang membuktikan: Minggu02AsetTest
