@@ -1,0 +1,32 @@
+sequenceDiagram
+    actor Peminjam
+    participant Jadwal as jadwal: JadwalPeminjaman
+    participant Baru as baru: Peminjaman
+    participant Aset as aset: Aset
+    participant Daftar as daftar: List~Peminjaman~
+
+    Peminjam ->> Jadwal: ajukan(baru)
+    activate Jadwal
+    Jadwal ->> Jadwal: isBentrok = bentrok(baru)
+
+    alt isBentrok == true
+        Jadwal --x Peminjam: throw PeminjamanBentrokException
+    else isBentrok == false
+        Jadwal ->> Baru: getAset()
+        Baru -->> Jadwal: aset
+
+        Jadwal ->> Aset: getJenis()
+        Aset -->> Jadwal: jenis
+
+        opt jenis == JenisAset.LAPTOP
+            Jadwal ->> Jadwal: hitung laptop aktif (DISETUJUI / DIPINJAM)
+            alt jumlahAktif >= kuotaLaptop
+                Jadwal --x Peminjam: throw KuotaHabisException
+            end
+        end
+
+        Jadwal ->> Daftar: add(baru)
+        Daftar -->> Jadwal: true
+        Jadwal -->> Peminjam: selesai (pengajuan diterima)
+    end
+    deactivate Jadwal

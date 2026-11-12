@@ -1,0 +1,193 @@
+classDiagram
+    direction TB
+    note "Root Package: id.ac.upb.asetpinjam"
+
+    class DapatDipinjam {
+        <<interface - kontrak>>
+        +bisaDipinjam() boolean
+    }
+    class AturanDenda {
+        <<interface - kontrak>>
+        +hitung(aset: Aset, hariTerlambat: int) long
+    }
+
+    class LayananDenda {
+        <<denda>>
+        +LayananDenda(aturan: AturanDenda)
+        +hitung(aset: Aset, hariTerlambat: int) long
+    }
+    class DendaFlat {
+        <<denda>>
+        +hitung(aset: Aset, hariTerlambat: int) long
+    }
+    class DendaProgresif {
+        <<denda>>
+        -HARI_TANPA_TAMBAHAN: int$
+        +hitung(aset: Aset, hariTerlambat: int) long
+    }
+
+    class KatalogAset {
+        <<katalog>>
+        -daftar: List~Aset~
+        +tambah(aset: Aset) void
+        +semua() List~Aset~
+        +cari(kata: String) List~Aset~
+        +cari(kata: String, jenis: JenisAset) List~Aset~
+    }
+    class JadwalPeminjaman {
+        <<jadwal>>
+        -daftar: List~Peminjaman~
+        -kuotaLaptop: int
+        +JadwalPeminjaman(kuotaLaptop: int)
+        #kuotaLaptop() int
+        #daftarMutable() List~Peminjaman~
+        +tambah(p: Peminjaman) void
+        +bentrok(baru: Peminjaman) boolean
+        +semuaUrutMulai() List~Peminjaman~
+        +perAset() Map~String, List~
+        +hapus(id: String) boolean
+        +ajukan(baru: Peminjaman) void
+    }
+
+    class Aset {
+        <<abstract - model>>
+        -kode: String
+        -nama: String
+        -status: StatusAset
+        -kondisi: Kondisi
+        +Aset(kode: String, nama: String)
+        +getKode() String
+        +getNama() String
+        +getStatus() StatusAset
+        +getKondisi() Kondisi
+        +setNama(nama: String) void
+        +setStatus(status: StatusAset) void
+        +setKondisi(kondisi: Kondisi) void
+        +bisaDipinjam() boolean
+        +getJenis() JenisAset
+        +hitungDenda(hariTerlambat: int)* long
+    }
+    class Ruang {
+        <<model>>
+        -kapasitas: int
+        +Ruang(kode: String, nama: String, kapasitas: int)
+        +getKapasitas() int
+        +getJenis() JenisAset
+        +hitungDenda(hariTerlambat: int) long
+    }
+    class Laptop {
+        <<model>>
+        -spesifikasi: String
+        -nomorInventaris: String
+        +Laptop(kode: String, nama: String, spesifikasi: String, nomorInventaris: String)
+        +getSpesifikasi() String
+        +getNomorInventaris() String
+        +getJenis() JenisAset
+        +hitungDenda(hariTerlambat: int) long
+    }
+    class AlatLab {
+        <<model>>
+        -laboratorium: String
+        -tingkatRisiko: TingkatRisiko
+        +AlatLab(kode: String, nama: String, laboratorium: String, tingkatRisiko: TingkatRisiko)
+        +getLaboratorium() String
+        +getTingkatRisiko() TingkatRisiko
+        +getJenis() JenisAset
+        +hitungDenda(hariTerlambat: int) long
+    }
+
+    class Peminjaman {
+        <<model>>
+        -id: String
+        -peminjam: Peminjam
+        -aset: Aset
+        -mulai: LocalDateTime
+        -selesai: LocalDateTime
+        -status: StatusPeminjaman
+        +Peminjaman(id: String, peminjam: Peminjam, aset: Aset, mulai: LocalDateTime, selesai: LocalDateTime)
+        +getId() String
+        +getPeminjam() Peminjam
+        +getAset() Aset
+        +getMulai() LocalDateTime
+        +getSelesai() LocalDateTime
+        +getStatus() StatusPeminjaman
+        +setStatusDariPenyimpanan(status: StatusPeminjaman) void
+        +ubahStatus(baru: StatusPeminjaman) void
+    }
+    class Peminjam {
+        <<record - model>>
+        -id: String
+        -nama: String
+        +id() String
+        +nama() String
+    }
+
+    class JenisAset {
+        <<enum - model>>
+        RUANG
+        LAPTOP
+        ALAT_LAB
+    }
+    class StatusAset {
+        <<enum - model>>
+        TERSEDIA
+        DIPINJAM
+        RUSAK
+    }
+    class Kondisi {
+        <<enum - model>>
+        BAIK
+        RUSAK_RINGAN
+        RUSAK_BERAT
+    }
+    class StatusPeminjaman {
+        <<enum - model>>
+        DIAJUKAN
+        DISETUJUI
+        DITOLAK
+        DIBATALKAN
+        DIPINJAM
+        TERLAMBAT
+        DIKEMBALIKAN
+    }
+    class TingkatRisiko {
+        <<enum - model>>
+        RENDAH
+        SEDANG
+        TINGGI
+    }
+
+    class Varian {
+        <<config>>
+        +nim: String
+        +nama: String
+        +dendaPerHari: int
+        +batasDurasiJam: int
+        +kuotaLaptop: int
+        +dariNim(nim: String, nama: String)$ Varian
+        +aktif()$ Varian
+    }
+
+    AturanDenda <|.. DendaFlat
+    AturanDenda <|.. DendaProgresif
+    LayananDenda "1" --> "1" AturanDenda : aturan
+
+    DapatDipinjam <|.. Aset
+    KatalogAset "1" o-- "0..*" Aset : daftar
+    JadwalPeminjaman "1" o-- "0..*" Peminjaman : daftar
+
+    Peminjaman "1" --> "1" Peminjam : peminjam
+    Peminjaman "1" --> "1" Aset : aset
+    Peminjaman --> StatusPeminjaman
+
+    Aset <|-- Ruang
+    Aset <|-- Laptop
+    Aset <|-- AlatLab
+    Aset --> StatusAset
+    Aset --> Kondisi
+    Aset --> JenisAset
+    AlatLab --> TingkatRisiko
+
+    Ruang ..> Varian : tarif
+    Laptop ..> Varian : tarif
+    AlatLab ..> Varian : tarif
