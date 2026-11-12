@@ -20,10 +20,10 @@ Salin setiap pertanyaan ambigu (nomor 1 sampai 7) ke sini dan jawab. Contoh:
 
 ## A-01: batas waktu bentrok
 - Pertanyaan: 09:00-11:00 dan 11:00-13:00 pada aset yang sama bentrok atau tidak?
-- Keputusan: (isi)
-- Alasan: (isi)
-- Dampak ke kode: (isi)
-- Tes yang membuktikan: (isi)
+- Keputusan: Tidak bentrok. Peminjaman baru yang waktu mulainya tepat sama dengan waktu selesai peminjaman sebelumnya (atau sebaliknya) dianggap sah.
+- Alasan: Karena pada jam 11:00 asetnya sudah selesai dipinjam, maka di jam 11:00 itu juga langsung bisa dipakai oleh peminjam berikutnya.
+- Dampak ke kode: JadwalPeminjaman.java pada method bentrok()
+- Tes yang membuktikan: mahasiswa/BatasBentrokTest.java
 
 ## Asumsi lain
 
