@@ -5,13 +5,10 @@ import id.ac.upb.asetpinjam.kontrak.DapatDipinjam;
 /**
  * Aset yang dapat dipinjam.
  *
- * <p>Minggu 2: lengkapi field, konstruktor, getter/setter, dan validasi (encapsulation).
- * Minggu 3: tambahkan getJenis() di tiap subclass.
- * Minggu 4: hitungDenda() dioverride di tiap subclass.
- * Minggu 5: isi bisaDipinjam() dan ubah menjadi class abstrak
- * (TestSupport.aset(...) di folder test menyesuaikan sendiri, lihat docs/minggu-05.md).
+ * <p>Kelas abstrak: tiap jenis aset wajib mengimplementasikan hitungDenda().
+ * Aturan bisaDipinjam() berlaku sama untuk semua jenis aset.
  */
-public class Aset implements DapatDipinjam {
+public abstract class Aset implements DapatDipinjam {
 
     private final String kode;
     private String nama;
@@ -66,10 +63,10 @@ public class Aset implements DapatDipinjam {
         this.kondisi = kondisi;
     }
 
-    /** TODO minggu 5: true hanya jika status TERSEDIA dan kondisi bukan RUSAK_BERAT. */
+    /** true hanya jika status TERSEDIA dan kondisi bukan RUSAK_BERAT. */
     @Override
     public boolean bisaDipinjam() {
-        throw new UnsupportedOperationException("TODO minggu 5");
+        return status == StatusAset.TERSEDIA && kondisi != Kondisi.RUSAK_BERAT;
     }
 
     /** TODO minggu 3: dioverride tiap subclass agar mengembalikan jenis yang benar. */
@@ -77,8 +74,6 @@ public class Aset implements DapatDipinjam {
         throw new UnsupportedOperationException("TODO minggu 3");
     }
 
-    /** TODO minggu 4: denda keterlambatan. Dioverride tiap subclass (aturan di docs/aturan-bisnis.md). */
-    public long hitungDenda(int hariTerlambat) {
-        throw new UnsupportedOperationException("TODO minggu 4");
-    }
+    /** Denda keterlambatan. Dioverride tiap subclass (aturan di docs/aturan-bisnis.md). */
+    public abstract long hitungDenda(int hariTerlambat);
 }
